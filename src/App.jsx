@@ -1,7 +1,7 @@
 import { useState } from "react";
 import Login from "./Login";
 import Signup from "./Signup";
-import MainPage from "./MainPage";
+import MainPage from "./main/MainPage";
 
 function App() {
   const [screen, setScreen] = useState("login");
