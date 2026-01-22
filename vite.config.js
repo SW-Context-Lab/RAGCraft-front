@@ -7,7 +7,7 @@ export default defineConfig({
 
   // vite.config.js
   server: {
-  proxy: { "/api": "http://localhost:8080" }
+  proxy: { "/api": "http://ec2-52-79-194-231.ap-northeast-2.compute.amazonaws.com:8080" }
   }
 })
 
