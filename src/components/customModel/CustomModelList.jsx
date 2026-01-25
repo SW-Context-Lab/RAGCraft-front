@@ -5,11 +5,20 @@ function CustomModelList({ models, onSelect }) {
       {models.map((m) => (
         <div
           key={m.id}
-          onClick={() => onSelect(m.id)}
+          
           style={{ border: "1px solid #999", padding: 12, marginBottom: 8 }}
         >
           <strong>{m.displayName}</strong>
           <p>{m.description}</p>
+
+          {/* 우하단 ... 버튼 */}
+          <button
+            onClick={() => onSelect(m.id)}
+          >
+            ⋯
+          </button>
+
+
         </div>
       ))}
     </>
