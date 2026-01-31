@@ -1,20 +1,14 @@
 import { useState } from "react";
 import { uploadSourceApi } from "../../api/sourceApi";
 
-/**
- * 소스 업로드 전용 모달
- * - PDF 등 원본 문서를 업로드하고
- * - 이후 커스텀 모델 생성 시 참조되는 "소스"를 생성함
- */
 function SourceUploadModal({ onClose, onUploaded }) {
   const [file, setFile] = useState(null);
   const [displayName, setDisplayName] = useState("");
   const [description, setDescription] = useState("");
 
   const handleUpload = async () => {
-    // 최소 검증
     if (!file || !displayName) {
-      alert("파일과 Display Name은 필수임");
+      alert("파일과 Display Name은 필수입니다.");
       return;
     }
 
@@ -26,7 +20,7 @@ function SourceUploadModal({ onClose, onUploaded }) {
     const res = await uploadSourceApi(formData);
 
     if (res.ok) {
-      onUploaded(); // 부모에서 소스 목록 다시 불러오기
+      onUploaded();
       onClose();
     } else {
       alert("소스 업로드 실패");
@@ -34,108 +28,106 @@ function SourceUploadModal({ onClose, onUploaded }) {
   };
 
   return (
-    <div style={overlayStyle}>
-      <div style={modalStyle}>
-        <h3>소스 추가</h3>
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      
+      {/*  배경 오버레이 */}
+      <div 
+        className="absolute inset-0 bg-black/60 backdrop-blur-[2px] transition-opacity" 
+        onClick={onClose} 
+      />
 
-        {/* 1) Display Name */}
-        <div style={fieldStyle}>
-          <label style={labelStyle}>Display Name</label>
-          <p style={hintStyle}>
-            소스 목록에서 보여질 이름임 (사람이 알아보기 쉽게 작성)
-          </p>
-
-          <input
-            placeholder="예: 2025 사내 규정 PDF"
-            value={displayName}
-            onChange={(e) => setDisplayName(e.target.value)}
-            style={inputStyle}
-          />
+      {/* 모달 카드 */}
+      <div className="relative w-full max-w-lg bg-white rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
+        
+        {/* 헤더 */}
+        <div className="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
+          <h3 className="text-xl font-bold text-gray-800">소스 추가</h3>
+          <button 
+            onClick={onClose}
+            className="text-gray-400 hover:text-gray-600 transition-colors"
+          >
+            <span className="text-2xl">×</span>
+          </button>
         </div>
 
-        {/* 2) Description */}
-        <div style={fieldStyle}>
-          <label style={labelStyle}>Description</label>
-          <p style={hintStyle}>
-            이 문서가 어떤 내용인지 간단히 설명함 (선택 입력)
-          </p>
+        {/* 폼 영역 */}
+        <div className="p-6 space-y-5">
+          
+          {/* Display Name */}
+          <div className="space-y-1.5">
+            <label className="text-lg font-bold text-gray-700 flex items-center gap-1">
+              Display Name <span className="text-blue-500">*</span>
+            </label>
+            <p className="text-sm text-gray-400">
+              소스 목록에서 보여질 이름입니다.
+            </p>
+            <input
+              placeholder="예: 2025 사내 규정 PDF"
+              value={displayName}
+              onChange={(e) => setDisplayName(e.target.value)}
+              className="w-full p-3 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all placeholder:text-gray-300"
+            />
+          </div>
 
-          <textarea
-            placeholder="예: 사내 인사 / 복지 / 근무 규정이 포함된 문서"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            style={{ ...inputStyle, height: 80, resize: "vertical" }}
-          />
+          {/* Description */}
+          <div className="space-y-1.5">
+            <label className="text-lg font-bold text-gray-700">Description</label>
+            <p className="text-sm text-gray-400">
+              이 문서에 대한 간단한 설명입니다 (선택)
+            </p>
+            <textarea
+              placeholder="예: 사내 인사 / 복지 / 근무 규정이 포함된 문서"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              className="w-full p-3 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all h-24 resize-none placeholder:text-gray-300"
+            />
+          </div>
+
+          {/* 파일 업로드 */}
+          <div className="space-y-1.5">
+            <label className="text-lg font-bold text-gray-700 flex items-center gap-1">
+              파일 선택 <span className="text-blue-500">*</span>
+            </label>
+            
+            <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer bg-gray-50 hover:bg-blue-50 hover:border-blue-300 transition-all group">
+              <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                <p className="mb-2 text-sm text-gray-500 group-hover:text-blue-600">
+                  {file ? (
+                    <span className="font-bold text-blue-600">{file.name}</span>
+                  ) : (
+                    <span>클릭하여 파일을 선택하세요</span>
+                  )}
+                </p>
+                <p className="text-xs text-gray-400 uppercase">PDF ONLY</p>
+              </div>
+              <input
+                type="file"
+                accept="application/pdf"
+                onChange={(e) => setFile(e.target.files[0])}
+                className="hidden"
+              />
+            </label>
+          </div>
         </div>
 
-        {/* 3) 파일 업로드 */}
-        <div style={fieldStyle}>
-          <label style={labelStyle}>파일 선택</label>
-          <p style={hintStyle}>
-            업로드할 원본 문서를 선택함 (현재는 PDF만 사용 예정)
-          </p>
-
-          <input
-            type="file"
-            accept="application/pdf"
-            onChange={(e) => setFile(e.target.files[0])}
-            style={inputStyle}
-          />
-        </div>
-
-        <div style={{ display: "flex", gap: 8, justifyContent: "flex-end" }}>
-          <button onClick={handleUpload}>등록</button>
-          <button onClick={onClose}>취소</button>
+        {/* 푸터 버튼 */}
+        <div className="px-6 py-4 bg-gray-50 flex gap-3 justify-end">
+          <button 
+            onClick={onClose}
+            className="px-5 py-2.5 text-sm font-bold text-gray-500 hover:text-gray-700 transition-colors"
+          >
+            취소
+          </button>
+          <button 
+            onClick={handleUpload}
+            className="px-6 py-2.5 bg-blue-600 text-white rounded-lg font-bold hover:bg-blue-700 active:scale-[0.98] transition-all shadow-md"
+          >
+            소스 등록
+          </button>
         </div>
       </div>
     </div>
   );
 }
-
-/* =====================
-   스타일
-===================== */
-
-const overlayStyle = {
-  position: "fixed",
-  inset: 0,
-  background: "rgba(0,0,0,0.4)",
-  display: "flex",
-  justifyContent: "center",
-  alignItems: "center",
-};
-
-const modalStyle = {
-  background: "black",
-  color: "white",
-  padding: 20,
-  width: 420,
-  borderRadius: 8,
-};
-
-const fieldStyle = {
-  marginBottom: 12,
-};
-
-const labelStyle = {
-  display: "block",
-  fontWeight: 700,
-  marginBottom: 4,
-};
-
-const hintStyle = {
-  margin: "0 0 6px 0",
-  fontSize: 12,
-  opacity: 0.75,
-};
-
-const inputStyle = {
-  width: "100%",
-  padding: 8,
-  boxSizing: "border-box",
-  background: "#111",
-  color: "white",
-  border: "1px solid #444",
-};
 
 export default SourceUploadModal;
