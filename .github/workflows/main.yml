@@ -1,0 +1,51 @@
+name: RAGCraft Frontend CD Pipeline
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. 레포 체크아웃
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 2. Node 환경 설정
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      # 3. 의존성 설치
+      - name: Install dependencies
+        run: npm ci
+
+      # 4. 프론트엔드 빌드
+      - name: Build frontend
+        run: npm run build
+
+      # 5. 기존 Apache 루트 index.html 제거
+      - name: Remove old Apache index.html
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ vars.EC2_HOST }}
+          username: ${{ vars.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            if [ -f /var/www/html/index.html ]; then
+              rm -f /var/www/html/index.html
+            fi
+
+      # 6. dist 내용을 Apache DocumentRoot로 배포
+      - name: Upload dist to Apache root
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ vars.EC2_HOST }}
+          username: ${{ vars.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          source: "dist/*"
+          target: "/var/www/html"
