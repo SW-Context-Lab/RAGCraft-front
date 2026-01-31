@@ -19,3 +19,11 @@ export const uploadSourceApi = async (formData) => {
     body: formData,
   });
 };
+
+export const deleteSourceApi = async (id) => {
+  const res = await fetch(`/api/sources/${id}`, {
+    method: "DELETE",
+    credentials: "include",
+  });
+  return res; 
+};
