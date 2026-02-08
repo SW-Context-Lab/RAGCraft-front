@@ -1,14 +1,12 @@
 import { useState, useRef, useEffect } from "react";
 import { queryCustomModelApi, fetchCustomModelsApi } from "../../api/customModelApi"; 
 
-function Chat() { 
+function Chat({ customModels }) {
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState([]);
   const [isTyping, setIsTyping] = useState(false);
   const [selectedModelId, setSelectedModelId] = useState("");
   
-  const [models, setModels] = useState([]); 
-
   const messagesEndRef = useRef(null);
 
   const scrollToBottom = () => {
@@ -18,22 +16,6 @@ function Chat() {
   useEffect(() => {
     scrollToBottom();
   }, [messages, isTyping]);
-
-  // 모델 리스트 가져오기
-  useEffect(() => {
-    const loadModels = async () => {
-      try {
-        const data = await fetchCustomModelsApi();
-        if (Array.isArray(data)) {
-            setModels(data);
-        }
-      } catch (error) {
-        console.error("모델 리스트 로딩 실패:", error);
-      }
-    };
-
-    loadModels();
-  }, []);
 
   const handleSend = async () => {
     if (!input.trim()) return;
@@ -82,11 +64,11 @@ function Chat() {
                 onChange={(e) => setSelectedModelId(e.target.value)}
             >
                 <option value="">
-                    {models.length === 0 ? "모델 로딩 중..." : "모델을 선택하세요"}
+                    {customModels.length === 0 ? "모델 로딩 중..." : "모델을 선택하세요"}
                 </option>
                 
                 {/* 여기가 핵심 수정 부분입니다 */}
-                {models.map((m) => (
+                {customModels.map((m) => (
                     <option key={m.id} value={m.id} title={m.description}>
                         {m.displayName}
                     </option>
@@ -107,7 +89,7 @@ function Chat() {
                 무엇이든 물어보세요
               </p>
               <p className="text-gray-400 mt-6 text-lg font-medium">
-                {models.length > 0 
+                {customModels.length > 0 
                   ? "상단에서 모델을 선택하고 대화를 시작하세요."
                   : "왼쪽 사이드바에서 커스텀 모델을 먼저 생성해주세요."}
               </p>
