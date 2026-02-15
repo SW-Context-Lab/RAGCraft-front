@@ -18,7 +18,7 @@ function App() {
       .catch(() => setScreen("auth"));
   }, []);
 
-  if (screen === null) return <div>로딩중...</div>;
+  if (screen === "null") return <div>로딩중...</div>;
 
   if (screen === "auth")
     return <Auth onLoginSuccess={() => setScreen("main")} />;
