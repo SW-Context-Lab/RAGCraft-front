@@ -12,6 +12,7 @@ function Sidebar({
   onCreateModel,
   onNewChat,
   customModels,
+  onSelectModel,
   loadCustomModelDetail,
   sources,
   loadSourceDetail
@@ -41,7 +42,7 @@ function Sidebar({
         <nav className="mt-4 space-y-6">
           <div>
             <p className="text-xs font-semibold text-gray-400 mb-2 px-2 uppercase">Custom Models</p>
-            <CustomModelList models={customModels} onSelect={loadCustomModelDetail} />
+            <CustomModelList models={customModels}  onSelectChat={onSelectModel} onSelectDetail={loadCustomModelDetail}/>
           </div>
           <div>
             <p className="text-xs font-semibold text-gray-400 mb-2 px-2 uppercase">Sources</p>

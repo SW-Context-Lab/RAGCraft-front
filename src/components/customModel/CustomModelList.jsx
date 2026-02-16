@@ -1,4 +1,4 @@
-function CustomModelList({ models, onSelect }) {
+function CustomModelList({ models, onSelectChat, onSelectDetail }) {
   return (
     <div className="space-y-2">
       {models.length === 0 ? (
@@ -8,7 +8,7 @@ function CustomModelList({ models, onSelect }) {
           <div
             key={m.id}
             className="group relative flex flex-col p-3 rounded-xl border border-transparent hover:border-blue-100 hover:bg-blue-50/50 transition-all cursor-pointer"
-            onClick={() => onSelect(m.id)}
+            onClick={() => onSelectChat(m.id)}
           >
             {/* 모델 이름 및 아이콘 */}
             <div className="flex items-center gap-2">
@@ -28,7 +28,7 @@ function CustomModelList({ models, onSelect }) {
               className="absolute right-2 top-3 w-7 h-7 flex items-center justify-center rounded-full text-gray-400 hover:bg-white hover:text-blue-600 hover:shadow-sm transition-all"
               onClick={(e) => {
                 e.stopPropagation(); 
-                onSelect(m.id);
+                onSelectDetail(m.id);
               }}
             >
               <span className="font-bold text-lg mb-2">⋯</span>

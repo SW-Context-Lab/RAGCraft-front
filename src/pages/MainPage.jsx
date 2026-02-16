@@ -16,6 +16,7 @@ function MainPage({ onLogout }) {
   const [showUpload, setShowUpload] = useState(false);
   const [showCreateModel, setShowCreateModel] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [selectedModelId, setSelectedModelId] = useState("");
 
   // Hook 사용
   const {
@@ -79,13 +80,14 @@ function MainPage({ onLogout }) {
         onNewChat={handleNewChat}
         customModels={customModels}
         loadCustomModelDetail={loadCustomModelDetail}
+        onSelectModel={setSelectedModelId}
         sources={sources}
         loadSourceDetail={loadSourceDetail}
       />
 
       {/* --- 메인 채팅 영역 --- */}
       <main className="flex-1 overflow-hidden">
-        <Chat customModels={customModels} />
+        <Chat customModels={customModels} selectedModelId={selectedModelId}/>
       </main>
 
       {/* --- 모달 레이어 --- */}
