@@ -5,13 +5,33 @@ function Chat({ customModels }) {
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState([]);
   const [isTyping, setIsTyping] = useState(false);
-  const [selectedModelId, setSelectedModelId] = useState("");
   
   const messagesEndRef = useRef(null);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
+
+  // 지난 대화 내용 불러오기
+  useEffect(() => {
+  if (!selectedModelId) return;
+
+  const loadHistory = async () => {
+    try {
+      const history = await fetchChatHistoryApi(selectedModelId);
+
+      // 서버는 role: "USER" | "ASSISTANT" 로 내려줌
+      setMessages(history);
+
+    } catch (err) {
+      console.error("히스토리 로딩 실패:", err);
+      setMessages([]);
+    }
+  };
+
+  loadHistory();
+}, [selectedModelId]);
+
 
   useEffect(() => {
     scrollToBottom();
@@ -27,7 +47,7 @@ function Chat({ customModels }) {
     const currentQuestion = input;
     setInput("");
 
-    const userMessage = { role: "user", content: currentQuestion };
+    const userMessage = { role: "USER", content: currentQuestion };
     setMessages((prev) => [...prev, userMessage]);
     setIsTyping(true);
 
@@ -35,7 +55,7 @@ function Chat({ customModels }) {
       const answer = await queryCustomModelApi(selectedModelId, currentQuestion);
 
       const botMessage = { 
-        role: "assistant", 
+        role: "ASSISTANT", 
         content: answer 
       };
       setMessages((prev) => [...prev, botMessage]);
@@ -43,7 +63,7 @@ function Chat({ customModels }) {
     } catch (error) {
       console.error("Chat Error:", error);
       const errorMessage = { 
-        role: "assistant", 
+        role: "ASSISTANT", 
         content: `오류가 발생했습니다: ${error.message}` 
       };
       setMessages((prev) => [...prev, errorMessage]);

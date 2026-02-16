@@ -57,3 +57,16 @@ export const queryCustomModelApi = async (id, question) => {
 
   return response.text();
 };
+
+// 채팅 히스토리 불러오기
+export const fetchChatHistoryApi = async (modelId) => {
+  const response = await fetch(`/api/custom-models/${modelId}/chats`, {
+    credentials: "include",
+  });
+
+  if (!response.ok) {
+    throw new Error("채팅 기록을 불러오지 못했습니다.");
+  }
+
+  return response.json();
+};
