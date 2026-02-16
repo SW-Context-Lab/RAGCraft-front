@@ -1,7 +1,9 @@
 import { useState, useRef, useEffect } from "react";
-import { queryCustomModelApi, fetchCustomModelsApi } from "../../api/customModelApi"; 
+import { queryCustomModelApi, fetchChatHistoryApi } from "../../api/customModelApi"; 
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
-function Chat({ customModels }) {
+function Chat({ customModels, selectedModelId }) {
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState([]);
   const [isTyping, setIsTyping] = useState(false);
@@ -117,14 +119,34 @@ function Chat({ customModels }) {
           ) : (
             <div className="space-y-6">
               {messages.map((msg, idx) => (
-                <div key={idx} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
-                  <div className={`max-w-[85%] px-5 py-3 rounded-2xl shadow-sm leading-relaxed whitespace-pre-wrap ${
-                    msg.role === "user" 
-                      ? "bg-blue-600 text-white " 
-                      : "bg-gray-100 text-gray-800 border border-gray-200 "
-                  }`}>
-                    {msg.content}
+                <div key={idx} className={`flex ${msg.role === "USER" ? "justify-end" : "justify-start"}`}>
+                  <div
+                    className={`max-w-[85%] px-5 py-3 rounded-2xl shadow-sm ${
+                      msg.role === "USER"
+                        ? "bg-blue-600 text-white"
+                        : "bg-gray-100 text-gray-800 border border-gray-200"
+                    }`}
+                  >
+                    <div className="text-sm leading-6">
+                      <ReactMarkdown
+                        remarkPlugins={[remarkGfm]}
+                        components={{
+                          p: ({ children }) => (
+                            <p className="my-1">{children}</p>
+                          ),
+                          ul: ({ children }) => (
+                            <ul className="my-2 pl-5 list-disc">{children}</ul>
+                          ),
+                          li: ({ children }) => (
+                            <li className="my-0.5">{children}</li>
+                          )
+                        }}
+                      >
+                        {msg.content}
+                      </ReactMarkdown>
+                    </div>
                   </div>
+
                 </div>
               ))}
               
